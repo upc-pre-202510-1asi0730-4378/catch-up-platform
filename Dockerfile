@@ -21,6 +21,12 @@ RUN dotnet restore ./CatchUpPlatform.API
 # Copy the rest of the application files
 COPY . .
 
+# Set environment variables for the application
+ENV DATABASE_URL=sql3.freesqldatabase.com
+ENV DATABASE_NAME=sql3785811
+ENV DATABASE_USER=sql3785811
+ENV DATABASE_PASSWORD=sGQj8rrNWj
+
 # Step 2: Deploy the application to builder stage
 # Publish the application in Release mode
 RUN dotnet publish ./CatchUpPlatform.API -c Release -o out
