@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(options => options.EnableAnnotations());
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
+Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
