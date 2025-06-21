@@ -1,3 +1,4 @@
+using System.Collections;
 using CatchUpPlatform.API.News.Application.Internal.CommandServices;
 using CatchUpPlatform.API.News.Application.Internal.QueryServices;
 using CatchUpPlatform.API.News.Domain.Repositories;
@@ -29,6 +30,10 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
     .AddEnvironmentVariables();
 Console.WriteLine(builder.Configuration.GetConnectionString("DefaultConnection"));
 
+foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+{
+    Console.WriteLine($"{env.Key}: {env.Value}");
+}
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
