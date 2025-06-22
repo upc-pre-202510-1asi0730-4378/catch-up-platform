@@ -25,46 +25,41 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => options.EnableAnnotations());
 
 // Add Database Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables()
-    .Build();
-var connectionStringFromConfig = configuration.GetConnectionString("DefaultConnection");
-var parsedConnectionString = Environment.ExpandEnvironmentVariables(connectionStringFromConfig);
-// If the connection string is not set in the configuration, it will be null.
-if (string.IsNullOrEmpty(connectionStringFromConfig) && builder.Environment.IsProduction())
-{
-    // Stop the application if the connection string is not set.
-    throw new Exception("Database connection string is not set in the configuration.");
-}
-Console.WriteLine($"Database connection string is set in the configuration: {connectionStringFromConfig}");
-Console.WriteLine($"Database connection string with current values: {parsedConnectionString}");
-
-
-// Verify Database Connection String
-if (connectionString is null)
-    // Stop the application if the connection string is not set.
-    throw new Exception("Database connection string is not set.");
 
 // Configure Database Context and Logging Levels
 if (builder.Environment.IsDevelopment())
     builder.Services.AddDbContext<AppDbContext>(
         options =>
         {
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            // Verify Database Connection String
+            if (connectionString is null)
+                // Stop the application if the connection string is not set.
+                throw new Exception("Database connection string is not set.");
             options.UseMySQL(connectionString)
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
         });
 else if (builder.Environment.IsProduction())
-    builder.Services.AddDbContext<AppDbContext>(
-        options =>
-        {
-            options.UseMySQL(parsedConnectionString)
-                .LogTo(Console.WriteLine, LogLevel.Error)
-                .EnableDetailedErrors();
-        });
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+        var connectionStringTemplate = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrEmpty(connectionStringTemplate)) 
+            // Stop the application if the connection string template is not set.
+            throw new Exception("Database connection string template is not set in the configuration.");
+        var connectionString = Environment.ExpandEnvironmentVariables(connectionStringTemplate);
+        if (string.IsNullOrEmpty(connectionString))
+            // Stop the application if the connection string is not set.
+            throw new Exception("Database connection string is not set in the configuration.");
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Error)
+            .EnableDetailedErrors();
+    });
 
 // Configure Dependency Injection
 
