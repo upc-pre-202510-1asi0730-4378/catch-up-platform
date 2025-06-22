@@ -31,7 +31,12 @@ var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 var connectionStringFromConfig = configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine(connectionStringFromConfig);
+// If the connection string is not set in the configuration, it will be null.
+if (string.IsNullOrEmpty(connectionStringFromConfig) && builder.Environment.IsProduction())
+{
+    // Stop the application if the connection string is not set.
+    throw new Exception("Database connection string is not set in the configuration.");
+}
 // Verify Database Connection String
 if (connectionString is null)
     // Stop the application if the connection string is not set.
@@ -51,7 +56,7 @@ else if (builder.Environment.IsProduction())
     builder.Services.AddDbContext<AppDbContext>(
         options =>
         {
-            options.UseMySQL(connectionString)
+            options.UseMySQL(connectionStringFromConfig)
                 .LogTo(Console.WriteLine, LogLevel.Error)
                 .EnableDetailedErrors();
         });
