@@ -31,6 +31,7 @@ var configuration = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 var connectionStringFromConfig = configuration.GetConnectionString("DefaultConnection");
+var parsedConnectionString = Environment.ExpandEnvironmentVariables(connectionStringFromConfig);
 // If the connection string is not set in the configuration, it will be null.
 if (string.IsNullOrEmpty(connectionStringFromConfig) && builder.Environment.IsProduction())
 {
@@ -38,6 +39,8 @@ if (string.IsNullOrEmpty(connectionStringFromConfig) && builder.Environment.IsPr
     throw new Exception("Database connection string is not set in the configuration.");
 }
 Console.WriteLine($"Database connection string is set in the configuration: {connectionStringFromConfig}");
+Console.WriteLine($"Database connection string with current values: {parsedConnectionString}");
+
 
 // Verify Database Connection String
 if (connectionString is null)
