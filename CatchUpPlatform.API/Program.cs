@@ -26,7 +26,12 @@ builder.Services.AddSwaggerGen(options => options.EnableAnnotations());
 
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+var connectionStringFromConfig = configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine(connectionStringFromConfig);
 // Verify Database Connection String
 if (connectionString is null)
     // Stop the application if the connection string is not set.
