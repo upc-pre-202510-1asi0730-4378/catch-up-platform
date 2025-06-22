@@ -61,7 +61,7 @@ else if (builder.Environment.IsProduction())
     builder.Services.AddDbContext<AppDbContext>(
         options =>
         {
-            options.UseMySQL(connectionStringFromConfig)
+            options.UseMySQL(parsedConnectionString)
                 .LogTo(Console.WriteLine, LogLevel.Error)
                 .EnableDetailedErrors();
         });
