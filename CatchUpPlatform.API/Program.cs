@@ -37,6 +37,8 @@ if (string.IsNullOrEmpty(connectionStringFromConfig) && builder.Environment.IsPr
     // Stop the application if the connection string is not set.
     throw new Exception("Database connection string is not set in the configuration.");
 }
+Console.WriteLine($"Database connection string is set in the configuration: {connectionStringFromConfig}");
+
 // Verify Database Connection String
 if (connectionString is null)
     // Stop the application if the connection string is not set.
